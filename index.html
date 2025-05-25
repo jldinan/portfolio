@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio - James Dinan</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --primary: #333;
+      --accent: #0077ff;
+      --text-muted: #666;
+      --border: #ddd;
+    }
+
+    body {
+      font-family: 'Carlito', sans-serif;
+      background-color: var(--bg);
+      color: var(--primary);
+      padding: 40px 20px;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 300;
+      text-align: center;
+      position: relative;
+      margin-bottom: 1rem;
+      margin-top: 0;
+    }
+
+    h2 {
+      font-weight: 400;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem auto;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .item:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      pointer-events: none;
+      height: 144px;
+      object-fit: contain;
+    }
+
+    .item p {
+      margin-top: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 0.5rem;
+    }
+
+    .tag {
+      background-color: var(--accent);
+      color: white;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 80vh;
+    }
+
+    .modal-caption {
+      margin-top: 1.2rem;
+      font-size: 1.1rem;
+      color: #ddd;
+      text-align: center;
+      max-width: 80%;
+    }
+
+    .modal .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 2rem;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease, color 0.2s ease;
+      padding: 12px;
+    }
+
+    .modal .close-btn:hover {
+      transform: scale(1.4);
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Carlito&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <h1>Portfolio - James Dinan</h1>
+  <h2>
+    A collection of projects I have developed individually or contributed to significantly, covering both frontend and backend work. Click a card for detailed info. Thanks for visiting :)
+  </h2>
+  <div class="gallery" id="gallery"></div>
+
+  <div id="imageModal" class="modal">
+    <div class="close-btn" onclick="closeModal()">&times;</div>
+    <img id="modalImage" src="" alt="">
+    <div id="modalCaption" class="modal-caption"></div>
+    <div id="modalDetail" class="modal-caption" style="font-size: 0.95rem; margin-top: 0.5rem; color: #bbb;"></div>
+  </div>
+
+  <script>
+    const items = [
+      {
+        src: 'images/grosvenor_horse_racing_v1.png',
+        desc: 'React dashboard with live data',
+        detail: 'Built using React.',
+        tags: ['React', 'WebSocket']
+      },
+      {
+        src: 'images/grosvenor_horse_racing_v2.png',
+        desc: 'Responsive marketing page',
+        detail: 'Created using Angular.',
+        tags: ['Angular', 'CSS Grid']
+      },
+      {
+        src: 'images/betting_page_portrait.png',
+        desc: 'Responsive marketing page',
+        detail: 'Created using Angular.',
+        tags: ['Angular', 'CSS Grid']
+      }
+    ];
+
+    const gallery = document.getElementById('gallery');
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+
+    items.forEach(({ src, desc, tags, detail }) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.onclick = () => openModal(src, desc, detail);
+      div.innerHTML = div.innerHTML = `
+        <img src="${src}" alt="${desc}" loading="lazy">
+        <p>${desc}</p>
+        <div class="tags">
+          ${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+        </div>
+      `;
+      gallery.appendChild(div);
+    });
+
+    function openModal(src, desc, detail) {
+      modalImg.src = src;
+      modalCaption.textContent = desc;
+      document.getElementById('modalDetail').textContent = detail || '';
+      modal.classList.add('show');
+    }
+
+    function closeModal() {
+      modal.classList.remove('show');
+      modalImg.src = '';
+      modalCaption.textContent = '';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
